@@ -1,0 +1,25 @@
+ALTER TABLE customer ADD COLUMN age INT NOT NULL DEFAULT 0;
+
+DROP TRIGGER IF EXISTS validate_customer_insert;
+DELIMITER $$
+CREATE TRIGGER validate_customer_insert
+BEFORE INSERT ON customer FOR EACH ROW
+BEGIN
+	IF NEW.age < 18 THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Age must be gte 18';
+	END IF;
+END$$
+DELIMITER ;
+
+DROP TRIGGER IF EXISTS validate_customer_update;
+DELIMITER $$
+CREATE TRIGGER validate_customer_update
+BEFORE UPDATE ON customer FOR EACH ROW
+BEGIN
+	IF NEW.age < 18 THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Age must be gte 18';
+	END IF;
+END$$
+DELIMITER ;
+
+UPDATE version SET version = 4;
